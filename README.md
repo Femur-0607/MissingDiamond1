@@ -1,0 +1,99 @@
+🕵️ 저택의 사라진 다이아몬드 살인사건 (Mansion Mystery MUD) 폭풍우가 치는 밤, 사라진 회장님의 다이아몬드... 당신은 3일 안에 진범을 잡을 수 있습니까? 본 프로젝트는 C++ 객체지향 프로그래밍을 기반으로 제작된 텍스트 추리 MUD 게임입니다.
+
+🎮 게임 정보 장르: 텍스트 기반 추리 시뮬레이션
+
+플레이 타임: 9턴 (3일: 아침/점심/저녁)
+
+승리 조건: 용의자를 심문하고 장소를 수색하여 '결정적 증거'를 확보한 후 진범을 지목하십시오.
+
+🛠 적용된 C++ 핵심 문법 클래스 정의 (Class Definition): Person, Suspect, Room, GameManager 등 각 객체를 클래스로 정의하여 데이터와 기능을 캡슐화했습니다.
+
+상속 및 다형성 (Inheritance & Polymorphism): Person 추상 클래스를 상속받아 Suspect 클래스를 구현하였으며, 가상 함수 오버라이딩을 통해 다형성을 활용했습니다.
+
+컨테이너 사용 (Vector): std::vector를 사용하여 용의자 목록, 장소 목록, 인벤토리를 유연하게 관리하고 동적 할당된 객체들을 안전하게 제어합니다.
+
+동적 할당 및 메모리 관리: new를 통해 객체를 생성하고, 소멸자에서 delete를 통해 메모리 누수를 방지했습니다.
+
+📊 클래스 설계 구조 (Class Diagram) 코드 스니펫
+
+classDiagram
+    class Person {
+        <<Abstract>>
+        #string name
+        +GetName() string
+        +Interrogate()* void
+    }
+    class Suspect {
+        -bool isGuilty
+        -vector<string> dialogueList
+        -string evidenceName
+        +Interrogate() void
+        +CheckEvidence() string
+    }
+    class Room {
+        -string roomName
+        -int searchCount
+        +Search() string
+    }
+    class GameManager {
+        -vector<Suspect*> suspects
+        -vector<Room*> rooms
+        -vector<string> inventory
+        -Suspect* guiltyPerson
+        +InitializeGame() void
+        +Run() void
+        -CombineEvidence() void
+    }
+
+    Person <|-- Suspect
+    GameManager o-- Suspect
+    GameManager o-- Room
+🚀 트러블슈팅 (Troubleshooting)
+
+클래스 멤버 변수의 Dangling Reference 문제 문제: 클래스 멤버 변수에 const string& 타입을 사용했으나 프로그램이 간헐적으로 튕기는 현상 발생.
+원인: 생성자 매개변수로 들어온 임시 객체의 참조값을 보관하다가, 해당 임시 객체가 파괴된 후 메모리에 접근하려 했기 때문(Dangling Reference).
+
+해결: 멤버 변수 타입을 std::string 값 복사 방식으로 변경하여 객체 고유의 데이터를 안전하게 보관하도록 수정.
+
+결과: 메모리 접근 오류 및 프로그램 비정상 종료 해결.
+
+가상 터미널 및 한글 인코딩 문제 문제: IDE 내장 터미널에서 system("cls")와 _getch()가 동작하지 않고 한글이 깨짐.
+원인: 운영체제의 코드페이지(CP949)와 소스코드 인코딩(UTF-8)의 불일치 및 가상 터미널의 명령어 미지원.
+
+해결: SetConsoleOutputCP(CP_UTF8)를 적용하여 인코딩을 맞추고, 외부 콘솔(CMD)에서 실행하도록 환경 설정.
+
+결과: 한글이 정상 출력되며 화면 전환 및 입력 기능이 원활하게 작동함.
+
+cin 입력 스트림 무한 루프 버그 문제: 숫자를 입력해야 하는 메뉴 선택창에서 문자를 입력할 경우 무한 루프에 빠짐.
+원인: 잘못된 입력값이 cin 버퍼에 남고 에러 플래그가 설정되어 이후 모든 cin 입력을 무시함.
+
+해결: if (!(cin >> choice)) 구문을 사용하여 에러를 감지하고, cin.clear()와 cin.ignore()를 사용해 버퍼를 비우는 방어적 프로그래밍 적용.
+
+결과: 잘못된 입력값에 대해 경고 문구를 출력하며 정상적으로 재입력을 유도함.
+
+windows.h와 using namespace std;의 충돌 문제: byte 식별자 중복 등으로 인한 컴파일 에러 발생.
+원인: windows.h 내부의 정의와 std 네임스페이스의 정의가 충돌함.
+
+해결: windows.h 포함 범위를 최소화하고, 필요한 기능만 사용하도록 헤더 관리를 최적화하여 해결.
+
+난수 생성 패턴 고정 문제 (진범 고정 현상) 문제: srand(time(NULL))을 사용했음에도 매 실행 시 특정 인물(정원사)이 범인으로 자주 설정됨.
+원인: rand() 함수의 초기 난수 생성이 시드값에 따라 편향되는 현상(Initial Bias).
+
+해결: srand 호출 직후 rand()를 여러 번(5~10회) 미리 호출하여 초기 편향 구간을 건너뛰도록 '엔진 예열' 로직 추가.
+
+결과: 매 판 진범이 무작위로 정상 변경되는 것을 확인.
+
+추상 클래스 링크 에러 (LNK2001) 문제: Person 클래스의 Interrogate() 함수 관련 확인되지 않은 외부 기호 에러 발생.
+원인: 부모 클래스에서 함수를 선언만 하고 구현하지 않았으나 자식에서 호출하려 함.
+
+해결: Person 클래스의 해당 함수를 순수 가상 함수(virtual void Interrogate() = 0;)로 선언하여 상속 전용 인터페이스임을 명시함.
+
+결과: 컴파일러가 자식 클래스의 오버라이딩을 정상 인식하여 링크 에러 해결.
+
+🖥 실행 방법 C++ 컴파일러(Visual Studio 2019 이상 권장)를 준비합니다.
+
+모든 .cpp 및 .h 파일을 프로젝트에 추가합니다.
+
+main.cpp를 실행하여 게임을 시작합니다.
+
+콘솔 환경에서 안내에 따라 번호를 입력하여 추리를 진행합니다.
