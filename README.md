@@ -14,40 +14,6 @@
 
 동적 할당 및 메모리 관리: new를 통해 객체를 생성하고, 소멸자에서 delete를 통해 메모리 누수를 방지했습니다.
 
-📊 클래스 설계 구조 (Class Diagram) 코드 스니펫
-
-classDiagram
-    class Person {
-        <<Abstract>>
-        #string name
-        +GetName() string
-        +Interrogate()* void
-    }
-    class Suspect {
-        -bool isGuilty
-        -vector<string> dialogueList
-        -string evidenceName
-        +Interrogate() void
-        +CheckEvidence() string
-    }
-    class Room {
-        -string roomName
-        -int searchCount
-        +Search() string
-    }
-    class GameManager {
-        -vector<Suspect*> suspects
-        -vector<Room*> rooms
-        -vector<string> inventory
-        -Suspect* guiltyPerson
-        +InitializeGame() void
-        +Run() void
-        -CombineEvidence() void
-    }
-
-    Person <|-- Suspect
-    GameManager o-- Suspect
-    GameManager o-- Room
 🚀 트러블슈팅 (Troubleshooting)
 
 클래스 멤버 변수의 Dangling Reference 문제 문제: 클래스 멤버 변수에 const string& 타입을 사용했으나 프로그램이 간헐적으로 튕기는 현상 발생.
