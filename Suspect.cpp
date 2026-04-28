@@ -4,7 +4,7 @@
 using namespace std;
 
 Suspect::Suspect(const string& name, bool guilty, const string& evidence)
-    : Person(name), isGuilty(guilty), evidenceName(evidence), interrogateCount(0) 
+    : Person(name), isGuilty(guilty), evidenceName(evidence) 
 {
     if (name == "집사") {
         dialogueList.push_back("전 평생을 회장님 곁에서 보냈습니다. 제가 왜 그런 짓을 하겠습니까?");
@@ -20,22 +20,8 @@ Suspect::Suspect(const string& name, bool guilty, const string& evidence)
     }
 }
 
-// 2. 취조 기능
+// 취조 기능: 대사만 출력
 void Suspect::Interrogate() {
-    interrogateCount++; // 취조 횟수 1 증가
-    cout << "\n[" << name << " 심문 중... (현재 " << interrogateCount << "회)]" << endl;
-    
     int randomIndex = rand() % dialogueList.size();
-    
     cout << name << " : \"" << dialogueList[randomIndex] << "\"" << endl; 
-}
-
-// 3. 단서 획득 체크 로직
-string Suspect::CheckEvidence() {
-    // 취조를 2회 했을 때, 진범이라면'심문 단서'를 줍니다.
-    if (interrogateCount == 2 && isGuilty) {
-        return name + " 심문 단서";
-    }
-    
-    return "";
 }

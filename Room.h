@@ -7,12 +7,11 @@ class Room
 {
 private:
     string roomName;
-    int searchCount;
 public:
     Room(const string& n);
     ~Room() {}
     
-    string Search(); 
+    void ShowSearchMessage(); 
     
     const string& GetRoomName() { return roomName; }
 };
