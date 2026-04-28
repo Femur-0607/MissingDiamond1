@@ -16,24 +16,23 @@ GameManager::GameManager() : currentTurn(1) {
     }
 }
 
-GameManager::~GameManager(){
-}
-
+GameManager::~GameManager(){}
+// 게임 시작 전 초기화 및 준비
 void GameManager::InitializeGame() {
     // 1. 장소 생성
-    rooms.push_back(new Room("주방"));
-    rooms.push_back(new Room("거실"));
-    rooms.push_back(new Room("회장님 집무실"));
+    rooms.push_back(make_unique<Room>("주방"));
+    rooms.push_back(make_unique<Room>("거실"));
+    rooms.push_back(make_unique<Room>("회장님 집무실"));
 
     // 2. 용의자 생성 (3명 중 1명만 무작위 범인)
     int luckyNumber = rand() % 3;
     string evidenceList[] = { "깨진 안경테", "피 묻은 손수건", "찢어진 장갑" };
     
-    suspects.push_back(new Suspect("집사", (luckyNumber == 0), evidenceList[0]));
-    suspects.push_back(new Suspect("가정부", (luckyNumber == 1), evidenceList[1]));
-    suspects.push_back(new Suspect("정원사", (luckyNumber == 2), evidenceList[2]));
+    suspects.push_back(make_unique<Suspect>("집사", (luckyNumber == 0), evidenceList[0]));
+    suspects.push_back(make_unique<Suspect>("가정부", (luckyNumber == 1), evidenceList[1]));
+    suspects.push_back(make_unique<Suspect>("정원사", (luckyNumber == 2), evidenceList[2]));
     
-    guiltyPerson = suspects[luckyNumber];
+    guiltyPerson = suspects[luckyNumber].get();
     
     // ================= [개발자 디버그 모드 추가] =================
     // 게임 시작 시 범인이 잘 바뀌는지 확인하기 위한 용도입니다.
@@ -43,14 +42,14 @@ void GameManager::InitializeGame() {
     system("pause > nul"); 
     // ============================================================
 }
-
+// 배경설정 보여주기
 void GameManager::ShowIntro() {
     system("cls");
     cout << "... 폭풍우가 치는 밤, '다이아몬드'가 사라졌습니다.";
     cout << "저택 안에는 3명의 용의자가 있습니다.";
     cout << "당신은 3일 안에 진범과 결정적 증거를 찾아야 합니다.";
 }
-
+// 게임 실행 시 진행되는 로직
 void GameManager::Run() {
     InitializeGame();
     ShowIntro();
@@ -102,7 +101,7 @@ void GameManager::Run() {
     cout << "게임을 종료하려면 아무 키나 누르세요..." << endl;
     system("pause > nul");;
 }
-
+// 날짜 및 인벤토리 표시
 void GameManager::ShowStatus() {
     // 1일차, 2일차, 3일차 계산
     int day = (currentTurn - 1) / 3 + 1;
@@ -121,8 +120,7 @@ void GameManager::ShowStatus() {
     for (const string& item : inventory) cout << "[" << item << "] ";
     cout << "\n-------------------------------------------" << endl;
 }
-
-// 심문 기능
+// 심문 기능 함수
 void GameManager::InterrogatePhase() {
     cout << "\n누구를 심문하시겠습니까?" << endl;
     for (int i = 0; i < suspects.size(); ++i) {
@@ -142,7 +140,7 @@ void GameManager::InterrogatePhase() {
         }
     }
 }
-
+// 방 서치 함수
 void GameManager::SearchPhase() 
 {
     cout << "\n어디를 수색하시겠습니까?" << endl;
@@ -164,51 +162,7 @@ void GameManager::SearchPhase()
         }
     }
 }
-
-void GameManager::FinalSelection()
-{
-    system("cls");
-    cout << "===========================================" << endl;
-    cout << "              최종 지목의 시간             " << endl;
-    cout << "===========================================" << endl;
-    cout << "3일의 시간이 모두 지났습니다." << endl;
-    cout << "당신이 생각하는 진범은 누구입니까?\n" << endl;
-    
-    // 1. 용의자 목록 보여주기
-    for (int i = 0; i < suspects.size(); ++i) {
-        cout << i + 1 << ". " << suspects[i]->GetName() << endl;
-    }
-    
-    int choice = 0;
-    while (true) {
-        cout << "\n범인 선택 (번호 입력): ";
-        if (!(cin >> choice)) {
-            cin.clear(); cin.ignore(1000, '\n');
-            continue;
-        }
-        if (choice >= 1 && choice <= suspects.size()) break;
-        cout << "존재하지 않는 번호입니다!" << endl;
-    }
-    
-    // 2. 결과 판정하기
-    if (choice >= 1 && choice <= suspects.size()) {
-        Suspect* picked = suspects[choice - 1];
-        
-        system("cls");
-        cout << "...당신은 " << picked->GetName() << "을(를) 진범으로 지목했습니다." << endl;
-        
-        if (picked->IsGuilty()) {
-            cout << "\n[정답!] " << picked->GetName() << "이(가) 진짜 범인이었습니다!" << endl;
-            cout << "사건을 무사히 해결했습니다! (승리)" << endl;
-        } else {
-            cout << "\n[오답!] " << picked->GetName() << "은(는) 범인이 아니었습니다..." << endl;
-            cout << "진범은 유유히 빠져나갔습니다. (패배)" << endl;
-        }
-    } else {
-        cout << "잘못된 선택입니다. 진범을 놓쳤습니다! (패배)" << endl;
-    }
-}
-    
+// 단서 조합하는 함수
 void GameManager::CombineEvidence()
 {
     string targetEvidence = guiltyPerson->GetEvidenceName();
@@ -243,5 +197,49 @@ void GameManager::CombineEvidence()
         cout << "===========================================\n" << endl;
     
         inventory.push_back(targetEvidence);
+    }
+}
+// 범인 결정하는 함수
+void GameManager::FinalSelection()
+{
+    system("cls");
+    cout << "===========================================" << endl;
+    cout << "              최종 지목의 시간             " << endl;
+    cout << "===========================================" << endl;
+    cout << "3일의 시간이 모두 지났습니다." << endl;
+    cout << "당신이 생각하는 진범은 누구입니까?\n" << endl;
+    
+    // 1. 용의자 목록 보여주기
+    for (int i = 0; i < suspects.size(); ++i) {
+        cout << i + 1 << ". " << suspects[i]->GetName() << endl;
+    }
+    
+    int choice = 0;
+    while (true) {
+        cout << "\n범인 선택 (번호 입력): ";
+        if (!(cin >> choice)) {
+            cin.clear(); cin.ignore(1000, '\n');
+            continue;
+        }
+        if (choice >= 1 && choice <= suspects.size()) break;
+        cout << "존재하지 않는 번호입니다!" << endl;
+    }
+    
+    // 2. 결과 판정하기
+    if (choice >= 1 && choice <= suspects.size()) {
+        Suspect* picked = suspects[choice - 1].get();
+        
+        system("cls");
+        cout << "...당신은 " << picked->GetName() << "을(를) 진범으로 지목했습니다." << endl;
+        
+        if (picked->IsGuilty()) {
+            cout << "\n[정답!] " << picked->GetName() << "이(가) 진짜 범인이었습니다!" << endl;
+            cout << "사건을 무사히 해결했습니다! (승리)" << endl;
+        } else {
+            cout << "\n[오답!] " << picked->GetName() << "은(는) 범인이 아니었습니다..." << endl;
+            cout << "진범은 유유히 빠져나갔습니다. (패배)" << endl;
+        }
+    } else {
+        cout << "잘못된 선택입니다. 진범을 놓쳤습니다! (패배)" << endl;
     }
 }

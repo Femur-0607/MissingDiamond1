@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <vector>
 #include <string>
 #include "Suspect.h"
@@ -8,13 +9,12 @@ using namespace std;
 
 class GameManager {
 private:
-    vector<Suspect*> suspects;  // 용의자 목록
-    vector<Room*>    rooms;     // 장소 목록
-    vector<string> inventory; // 획득한 증거물 저장소
-    Suspect* guiltyPerson; // 진범을 담는 변수
+    vector<unique_ptr<Suspect>> suspects;   // 용의자 목록
+    vector<unique_ptr<Room>> rooms; // 장소 목록
+    vector<string> inventory;   // 획득한 증거물 저장소
+    Suspect* guiltyPerson;  // 진범을 담는 변수
     
     int currentTurn;
-    
     const int maxTurns = 9; // 3일(아침, 점심, 저녁)
 
 public:
