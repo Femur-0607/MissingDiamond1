@@ -20,6 +20,8 @@ Suspect::Suspect(const string& name, bool guilty, const string& evidence)
     }
 }
 
+Suspect::~Suspect(){}
+
 // 취조 기능: 대사만 출력
 void Suspect::Interrogate() {
     int randomIndex = rand() % dialogueList.size();

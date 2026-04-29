@@ -4,6 +4,8 @@
 #include <ctime>
 #include <algorithm>
 
+#include "ItemRequiredRoom.h"
+
 using namespace std;
 
 GameManager::GameManager() : currentTurn(1), guiltyPerson(nullptr) {
@@ -17,7 +19,7 @@ void GameManager::InitializeGame() {
     rooms.clear();
     rooms.push_back(make_unique<Room>("주방"));
     rooms.push_back(make_unique<Room>("거실"));
-    rooms.push_back(make_unique<Room>("회장님 집무실"));
+    rooms.push_back(make_unique<ItemRequiredRoom>("회장님 집무실", "열쇠"));
     
     evidence.clear();
     evidence.push_back(make_unique<Item>("깨진 안경테","집사 증거물", ItemType::Evidence));
@@ -153,12 +155,30 @@ void GameManager::SearchPhase() {
         cout << "잘못된 선택입니다." << endl;
         return;
     }
-
+    
     int idx = target - 1;
+    Room* selectedRoom = rooms[idx].get();
+    
+    if (selectedRoom->HasRequiredItem(inventory) == true) {
+        cout << "방에 입장하여 수색을 시작합니다!" << endl;
+    }
+    else
+    {
+        cout << "방 문이 닫혀있어 입장하지 못하였습니다." << endl;
+        cout << "열쇠가 필요할꺼 같습니다." << endl;
+        return;
+    }
+    
     roomSearchCounts[idx]++;
     
     cout << "\n[" << rooms[idx]->GetRoomName() << " 수색 중... (현재 " << roomSearchCounts[idx] << "회)]" << endl;
     rooms[idx]->ShowSearchMessage();
+    
+    if (target == 2) // 거실 수색 시
+    {
+        inventory.push_back(make_unique<Item>("열쇠", "어떤 방을 열 수 있다.", ItemType::Normal));
+        cout << "\n[!] " << rooms[idx]->GetRoomName() << "에서 [" << "열쇠" << "]를 발견했습니다!" << endl;
+    }
     
     if (roomSearchCounts[idx] == 3) {
         string itemName = rooms[idx]->GetRoomName() + " 수색 단서";

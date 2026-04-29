@@ -1,7 +1,10 @@
 #include "Room.h"
 #include <iostream>
+#include <vector>
 
-Room::Room(const string& n) : roomName(n) {}
+#include "Item.h"
+
+Room::Room(const string& name) : roomName(name) {}
 
 // 수색 연출 메시지 출력
 void Room::ShowSearchMessage() 

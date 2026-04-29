@@ -13,6 +13,7 @@ private:
     string evidenceName;    // 가지고 있는 단서 이름
 public:
     Suspect(const string& name, bool guilty, const string& evidence);
+    ~Suspect();
     
     void Interrogate() override;
     
