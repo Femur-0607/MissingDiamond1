@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <unordered_map>
 #include <vector>
 #include "Suspect.h"
 #include "Room.h"
@@ -19,8 +20,8 @@ private:
     const int maxTurns = 9; // 3일(아침, 점심, 저녁)
 
     // 카운트 관리 변수 추가
-    vector<int> roomSearchCounts;
-    vector<int> suspectInterrogateCounts;
+    unordered_map<string, int> roomSearchCounts;
+    unordered_map<string, int> suspectInterrogateCounts;
 
 public:
     GameManager();

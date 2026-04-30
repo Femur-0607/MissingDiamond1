@@ -33,10 +33,6 @@ void GameManager::InitializeGame() {
     suspects.push_back(make_unique<Suspect>("정원사", (luckyNumber == 2), evidence[2]->GetItemName()));
     
     guiltyPerson = suspects[luckyNumber].get();
-
-    // 카운트 벡터 초기화
-    roomSearchCounts.assign(rooms.size(), 0);
-    suspectInterrogateCounts.assign(suspects.size(), 0);
     
     cout << "\n[DEBUG] 시스템: 이번 판의 진범은 [" << guiltyPerson->GetName() << "]입니다." << endl;
     cout << "[DEBUG] 증거품: " << guiltyPerson->GetEvidenceName() << endl;
@@ -131,12 +127,13 @@ void GameManager::InterrogatePhase() {
     }
     
     int idx = target - 1;
-    suspectInterrogateCounts[idx]++;
+    Suspect* selectedSuspect = suspects[idx].get();
+    suspectInterrogateCounts[selectedSuspect->GetName()]++;
     
-    cout << "\n[" << suspects[idx]->GetName() << " 심문 중... (현재 " << suspectInterrogateCounts[idx] << "회)]" << endl;
+    cout << "\n[" << suspects[idx]->GetName() << " 심문 중... (현재 " << suspectInterrogateCounts[selectedSuspect->GetName()] << "회)]" << endl;
     suspects[idx]->Interrogate();
     
-    if (suspectInterrogateCounts[idx] == 2 && suspects[idx]->IsGuilty()) {
+    if (suspectInterrogateCounts[selectedSuspect->GetName()] == 2 && suspects[idx]->IsGuilty()) {
         string itemName = suspects[idx]->GetName() + " 심문 단서";
         cout << "\n[!] " << suspects[idx]->GetName() << "에게서 [" << itemName << "]를 발견했습니다!" << endl;
         inventory.push_back(make_unique<Item>(itemName, itemName, ItemType::Clue));
@@ -169,9 +166,9 @@ void GameManager::SearchPhase() {
         return;
     }
     
-    roomSearchCounts[idx]++;
+    roomSearchCounts[selectedRoom->GetRoomName()]++;
     
-    cout << "\n[" << rooms[idx]->GetRoomName() << " 수색 중... (현재 " << roomSearchCounts[idx] << "회)]" << endl;
+    cout << "\n[" << rooms[idx]->GetRoomName() << " 수색 중... (현재 " << roomSearchCounts[selectedRoom->GetRoomName()] << "회)]" << endl;
     rooms[idx]->ShowSearchMessage();
     
     if (target == 2) // 거실 수색 시
@@ -180,7 +177,7 @@ void GameManager::SearchPhase() {
         cout << "\n[!] " << rooms[idx]->GetRoomName() << "에서 [" << "열쇠" << "]를 발견했습니다!" << endl;
     }
     
-    if (roomSearchCounts[idx] == 3) {
+    if (roomSearchCounts[selectedRoom->GetRoomName()] == 3) {
         string itemName = rooms[idx]->GetRoomName() + " 수색 단서";
         cout << "\n[!] " << rooms[idx]->GetRoomName() << "에서 [" << itemName << "]를 발견했습니다!" << endl;
         inventory.push_back(make_unique<Item>(itemName, itemName, ItemType::Clue));
