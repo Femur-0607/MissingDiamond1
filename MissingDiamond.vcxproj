@@ -130,6 +130,8 @@
   <ItemGroup>
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="Item.cpp" />
+    <ClCompile Include="ItemData.cpp" />
+    <ClCompile Include="ItemManager.cpp" />
     <ClCompile Include="ItemRequiredRoom.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Person.cpp" />
@@ -139,6 +141,8 @@
   <ItemGroup>
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="ItemData.h" />
+    <ClInclude Include="ItemManager.h" />
     <ClInclude Include="ItemRequiredRoom.h" />
     <ClInclude Include="Person.h" />
     <ClInclude Include="Room.h" />

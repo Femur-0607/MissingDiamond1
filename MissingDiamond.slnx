@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="MissingDiamond.vcxproj" />
+  <Project Path="MissingDiamond.vcxproj" Id="eb25cb03-a794-4410-812e-f9425a543f65" />
 </Solution>

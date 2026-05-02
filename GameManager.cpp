@@ -1,4 +1,4 @@
-#include "GameManager.h"
+﻿#include "GameManager.h"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -22,9 +22,9 @@ void GameManager::InitializeGame() {
     rooms.push_back(make_unique<ItemRequiredRoom>("회장님 집무실", "열쇠"));
     
     evidence.clear();
-    evidence.push_back(make_unique<Item>("깨진 안경테","집사 증거물", ItemType::Evidence));
-    evidence.push_back(make_unique<Item>("피 묻은 손수건","가정부 증거물", ItemType::Evidence));
-    evidence.push_back(make_unique<Item>("찢어진 장갑","정원사 증거물", ItemType::Evidence));
+    evidence.push_back(make_unique<Item>(201));
+    evidence.push_back(make_unique<Item>(202));
+    evidence.push_back(make_unique<Item>(203));
     
     suspects.clear();
     int luckyNumber = rand() % 3;
@@ -136,7 +136,7 @@ void GameManager::InterrogatePhase() {
     if (suspectInterrogateCounts[selectedSuspect->GetName()] == 2 && suspects[idx]->IsGuilty()) {
         string itemName = suspects[idx]->GetName() + " 심문 단서";
         cout << "\n[!] " << suspects[idx]->GetName() << "에게서 [" << itemName << "]를 발견했습니다!" << endl;
-        inventory.push_back(make_unique<Item>(itemName, itemName, ItemType::Clue));
+        inventory.push_back(make_unique<Item>(101));
     }
 }
 
@@ -173,14 +173,14 @@ void GameManager::SearchPhase() {
     
     if (target == 2) // 거실 수색 시
     {
-        inventory.push_back(make_unique<Item>("열쇠", "어떤 방을 열 수 있다.", ItemType::Normal));
+        inventory.push_back(make_unique<Item>(301));
         cout << "\n[!] " << rooms[idx]->GetRoomName() << "에서 [" << "열쇠" << "]를 발견했습니다!" << endl;
     }
     
     if (roomSearchCounts[selectedRoom->GetRoomName()] == 3) {
         string itemName = rooms[idx]->GetRoomName() + " 수색 단서";
         cout << "\n[!] " << rooms[idx]->GetRoomName() << "에서 [" << itemName << "]를 발견했습니다!" << endl;
-        inventory.push_back(make_unique<Item>(itemName, itemName, ItemType::Clue));
+        inventory.push_back(make_unique<Item>(102));
     }
 }
 

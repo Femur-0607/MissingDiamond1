@@ -1,20 +1,21 @@
 #include "Item.h"
+#include "ItemManager.h"
 
-Item::Item(const string& itemName, const string& itemDescription, ItemType itemType)
-: itemName(itemName), itemDescription(itemDescription), itemType(itemType) {}
-Item::~Item() {}
+using namespace std;
+
+Item::Item(int itemID): itemID(itemID){}
+
+int Item::GetItemID() const
+{
+    return itemID;
+}
 
 const string& Item::GetItemName() const
 {
-    return itemName;
-}
-
-const string& Item::GetItemDescription() const
-{
-    return itemDescription;
+    return ItemManager::GetItemInstance().GetItemData(itemID).name;
 }
 
 ItemType Item::GetItemType() const
 {
-    return itemType;
+    return ItemManager::GetItemInstance().GetItemData(itemID).type;
 }
